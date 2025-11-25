@@ -82,7 +82,7 @@ $username = $_SESSION['username'];
                     <h3>
                         <?php
                         require 'koneksi.php';
-                        $q = $db->query("SELECT COUNT(*) AS total FROM lorapz_store_users");
+                        $q = $db->query("SELECT COUNT(*) AS total FROM users");
                         echo $q->fetch_assoc()['total'];
                         ?>
                     </h3>
@@ -94,7 +94,7 @@ $username = $_SESSION['username'];
                     <h6 class="text-muted">Total E-Book</h6>
                     <h3>
                         <?php
-                        $q = $db->query("SELECT COUNT(*) AS total FROM lorapz_store_ebooks");
+                        $q = $db->query("SELECT COUNT(*) AS total FROM ebooks");
                         echo $q->fetch_assoc()['total'];
                         ?>
                     </h3>
@@ -106,7 +106,7 @@ $username = $_SESSION['username'];
                     <h6 class="text-muted">Total Pesanan</h6>
                     <h3>
                         <?php
-                        $q = $db->query("SELECT COUNT(*) AS total FROM lorapz_store_orders");
+                        $q = $db->query("SELECT COUNT(*) AS total FROM orders");
                         echo $q->fetch_assoc()['total'];
                         ?>
                     </h3>
@@ -119,7 +119,7 @@ $username = $_SESSION['username'];
                     <h3 class="text-success">
                         Rp 
                         <?php
-                        $q = $db->query("SELECT SUM(total_price) AS revenue FROM lorapz_store_orders WHERE payment_status='paid'");
+                        $q = $db->query("SELECT SUM(total_price) AS revenue FROM orders WHERE payment_status='paid'");
                         echo number_format($q->fetch_assoc()['revenue'] ?? 0, 0, ',', '.');
                         ?>
                     </h3>
@@ -136,22 +136,25 @@ $username = $_SESSION['username'];
                 </div>
 
                 <?php
-                // Query data penjualan per bulan
-                $penjualan = $db->query("
-                    SELECT DATE_FORMAT(created_at, '%M') AS bulan, SUM(total_price) AS total
-                    FROM lorapz_store_orders
-                    WHERE payment_status='paid'
-                    GROUP BY MONTH(created_at)
-                ");
+                    $penjualan = $db->query("
+                        SELECT 
+                            DATE_FORMAT(created_at, '%Y-%m') AS bulan,
+                            SUM(total_price) AS total
+                        FROM orders
+                        WHERE payment_status='paid'
+                        GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+                        ORDER BY bulan
+                    ");
 
-                $labels = [];
-                $values = [];
+                    $labels = [];
+                    $values = [];
 
                 while ($row = $penjualan->fetch_assoc()) {
                     $labels[] = $row['bulan'];
                     $values[] = $row['total'];
                 }
                 ?>
+
 
                 <script>
                     const ctx = document.getElementById('salesChart').getContext('2d');
@@ -192,8 +195,8 @@ $username = $_SESSION['username'];
                         <?php
                         $q = $db->query("
                             SELECT o.*, u.name 
-                            FROM lorapz_store_orders o
-                            JOIN lorapz_store_users u ON u.user_id = o.user_id
+                            FROM orders o
+                            JOIN users u ON u.user_id = o.user_id
                             ORDER BY o.created_at DESC
                             LIMIT 10
                         ");
