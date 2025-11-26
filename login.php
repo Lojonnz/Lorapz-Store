@@ -1,16 +1,83 @@
 <?php
+require 'koneksi.php';
 session_start();
 
-$username = $_POST['username'];
-$password = $_POST['password'];
+$error = "";
 
-if ($username === "admin" && $password === "8AcVk=!+E'X,8h") {
-    $_SESSION['role'] = "admin";
-    header("Location: dashboard.php");
-    exit;
-} else {
-    $_SESSION['role'] = "user";
-    header("Location: index.php");
-    exit;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+
+    $q = $db->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
+    $q->bind_param("s", $email);
+    $q->execute();
+    $result = $q->get_result();
+
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
+
+        if (password_verify($password, $user['password'])) {
+
+            // buat session
+            $_SESSION['username'] = $user['name'];
+            $_SESSION['user_id'] = $user['user_id'];
+            $_SESSION['role'] = $user['role'];
+
+            // redirect sesuai role
+            if ($user['role'] === 'admin') {
+                header("Location: dashboard.php");
+            } else {
+                header("Location: index.php");
+            }
+            exit;
+        }
+    }
+
+    $error = "Email atau password salah!";
 }
 ?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Lorapz Store</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="card p-4 shadow" style="width: 380px; border-radius: 12px;">
+        <h3 class="text-center mb-3">Login</h3>
+
+        <?php if (isset($_GET['success'])): ?>
+            <div class="alert alert-success">Akun berhasil dibuat. Silakan login.</div>
+        <?php endif; ?>
+
+        <?php if ($error): ?>
+            <div class="alert alert-danger"><?= $error ?></div>
+        <?php endif; ?>
+
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+
+            <button class="btn btn-primary w-100">Login</button>
+        </form>
+
+        <p class="text-center mt-3">
+            Belum punya akun? <a href="register.php">Daftar</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

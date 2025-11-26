@@ -1,18 +1,11 @@
 <?php
-session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: index.php");
-    exit;
-}
+require 'admin_check.php';
+require 'koneksi.php';
+
+// Ambil username
+$username = $_SESSION['username'] ?? "Lorapz Store";
 ?>
 
-<?php
-session_start();
-if (!isset($_SESSION['username'])) {
-    $_SESSION['username'] = "Lorapz Store";
-}
-$username = $_SESSION['username'];
-?>
 
 <!DOCTYPE html>
 <html lang="id">
@@ -72,7 +65,7 @@ $username = $_SESSION['username'];
         <a href="#">Laporan</a>
         <a href="#">Pengaturan</a>
         <hr>
-        <a href="#">Keluar</a>
+        <a href="logout.php">Keluar</a>
     </div>
 
     <!-- Main Content -->

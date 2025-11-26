@@ -51,20 +51,41 @@ body.dark .navbar{background:#06132a}
 <nav class="navbar py-3">
   <div class="container d-flex justify-content-between align-items-center">
     <div class="brand">Lorapz Store</div>
+
     <div class="d-flex align-items-center">
         <button id="theme-toggle" class="theme-toggle me-3">🌓</button>
+
         <?php if ($isLoggedIn): ?>
-            <div class="me-2">Halo, <?= htmlspecialchars($_SESSION['username']) ?></div>
-            <?php if ($isAdmin): ?>
-                <a class="btn btn-sm btn-outline-accent me-2" href="dashboard.php">Dashboard</a>
-            <?php endif; ?>
+            <!-- Dropdown Akun -->
+            <div class="dropdown me-2">
+                <button class="btn btn-sm btn-outline-accent dropdown-toggle" 
+                        type="button" 
+                        data-bs-toggle="dropdown" 
+                        aria-expanded="false">
+                    Akun (<?= htmlspecialchars($_SESSION['username']) ?>)
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <?php if ($isAdmin): ?>
+                        <li><a class="dropdown-item" href="dashboard.php">Dashboard Admin</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                    <?php endif; ?>
+                    <li><a class="dropdown-item" href="profile.php">Profil Saya</a></li>
+                    <li><a class="dropdown-item" href="orders.php">Riwayat Pembelian</a></li>
+                </ul>
+            </div>
+
+            <!-- Logout -->
             <a class="btn btn-sm btn-outline-secondary" href="logout.php">Logout</a>
+
         <?php else: ?>
+            <!-- Belum Login -->
             <a class="btn btn-sm btn-primary" href="login.php">Login</a>
         <?php endif; ?>
     </div>
+
   </div>
 </nav>
+
 
 <section class="hero">
   <div class="container">
