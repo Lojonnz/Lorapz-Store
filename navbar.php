@@ -1,6 +1,8 @@
 <?php
 // homepage.php — Modular layout (Option C)
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require 'koneksi.php';
 
 // Ambil produk: 4 ebook terbaru + 4 service terbaru
@@ -47,7 +49,6 @@ body.dark .navbar{background:#06132a}
 </style>
 </head>
 <body>
-
 <nav class="navbar py-3">
   <div class="container d-flex justify-content-between align-items-center">
     <a href="index.php" class="brand text-decoration-none">Lorapz Store</a>
@@ -85,121 +86,6 @@ body.dark .navbar{background:#06132a}
 
   </div>
 </nav>
-
-
-<section class="hero">
-  <div class="container">
-    <h1 style="font-size:2.2rem;margin-bottom:.4rem">Temukan E-Book & Jasa Digital Berkualitas</h1>
-    <p style="opacity:.95;max-width:760px;margin:auto">Kurikulum, template, dan layanan profesional — langsung bisa dibeli dan diunduh. Pilih kategori di bawah untuk mulai menjelajah.</p>
-  </div>
-</section>
-
-<main class="container my-5">
-
-  <!-- Featured & Quick Links -->
-  <div class="row mb-4">
-    <div class="col-md-8">
-      <div class="card p-3">
-        <h5 class="mb-0">Highlight</h5>
-        <p class="text-muted small mb-0">Produk unggulan & penawaran khusus.</p>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card p-3">
-        <h6 class="mb-1">Cari Cepat</h6>
-        <form action="search.php" method="get">
-            <div class="input-group">
-                <input name="q" class="form-control" placeholder="Cari ebook atau layanan...">
-                <button class="btn btn-outline-accent" type="submit">Cari</button>
-            </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- EBOOKS -->
-  <section class="mb-5">
-    <div class="section-title">
-      <h4>E-Book Terbaru</h4>
-      <a href="ebooks.php" class="small text-muted">Lihat Semua →</a>
-    </div>
-
-    <div class="grid">
-      <?php if ($ebooks && $ebooks->num_rows > 0): ?>
-        <?php while ($e = $ebooks->fetch_assoc()):
-            $img = !empty($e['cover_image']) ? 'uploads/'.htmlspecialchars($e['cover_image']) : $fallback;
-            $title = htmlspecialchars($e['title']);
-        ?>
-        <div class="card-prod">
-          <img src="<?= $img ?>" alt="<?= $title ?>" onerror="this.src='<?= $fallback ?>'">
-          <div class="card-body">
-            <h6 style="margin:0;"><?= $title ?></h6>
-            <div class="text-muted small"><?= htmlspecialchars($e['category'] ?? '') ?></div>
-            <div class="d-flex justify-content-between align-items-center mt-2">
-              <div class="price">Rp <?= number_format($e['price'],0,',','.') ?></div>
-              <div>
-                <a class="btn btn-sm btn-outline-accent" href="product.php?id=<?= $e['ebook_id'] ?>&type=ebook">Detail</a>
-                <a class="btn btn-sm btn-primary" href="buy.php?id=<?= $e['ebook_id'] ?>&type=ebook">Beli</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <?php endwhile; ?>
-      <?php else: ?>
-        <div class="card p-4">Belum ada ebook.</div>
-      <?php endif; ?>
-    </div>
-  </section>
-
-  <!-- SERVICES -->
-  <section class="mb-5">
-    <div class="section-title">
-      <h4>Jasa & Layanan</h4>
-      <a href="services.php" class="small text-muted">Lihat Semua →</a>
-    </div>
-
-    <div class="grid">
-      <?php if ($services && $services->num_rows > 0): ?>
-        <?php while ($s = $services->fetch_assoc()):
-            $img = !empty($s['cover_image']) ? 'uploads/'.htmlspecialchars($s['cover_image']) : $fallback;
-            $title = htmlspecialchars($s['title']);
-        ?>
-        <div class="card-prod">
-          <img src="<?= $img ?>" alt="<?= $title ?>" onerror="this.src='<?= $fallback ?>'">
-          <div class="card-body">
-            <h6 style="margin:0;"><?= $title ?></h6>
-            <div class="text-muted small">Jasa Profesional</div>
-            <div class="d-flex justify-content-between align-items-center mt-2">
-              <div class="price">Rp <?= number_format($s['price'],0,',','.') ?></div>
-              <div>
-                <a class="btn btn-sm btn-outline-accent" href="product.php?id=<?= $s['service_id'] ?>&type=service">Detail</a>
-                <a class="btn btn-sm btn-primary" href="buy.php?id=<?= $s['service_id'] ?>&type=service">Beli</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <?php endwhile; ?>
-      <?php else: ?>
-        <div class="card p-4">Belum ada layanan.</div>
-      <?php endif; ?>
-    </div>
-  </section>
-
-</main>
-
-<footer class="footer">
-  <div class="container footer">
-    <div class="row">
-      <div class="col-md-6 text-start">
-        <strong>Lorapz Store</strong><br>Marketplace E-Book & Jasa Digital
-      </div>
-      <div class="col-md-6 text-end text-muted">
-        &copy; <?= date('Y') ?> Lorapz Store
-      </div>
-    </div>
-  </div>
-</footer>
-
 <script>
 // Theme toggle
 const tbtn = document.getElementById('theme-toggle');

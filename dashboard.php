@@ -58,7 +58,7 @@ $username = $_SESSION['username'] ?? "Lorapz Store";
     <!-- Sidebar -->
     <div class="sidebar">
         <h4 class="text-center mb-4">Lorapz Store</h4>
-        <a href="#">Dashboard</a>
+        <a href="index.php">Halaman Utama</a>
         <a href="#">Produk</a>
         <a href="#">Transaksi</a>
         <a href="#">Pelanggan</a>
