@@ -62,5 +62,5 @@ You can view relational structure through **phpMyAdmin → Designer View**.
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/lorapz-store.git
+   git clone https://github.com/Lojonnz/Lorapz-Store.git
    cd lorapz-store
