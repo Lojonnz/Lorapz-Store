@@ -1,0 +1,63 @@
+:root{
+  --accent:#0d6efd;
+  --bg:#f4f6f9;
+  --card:#fff;
+  --muted:#6b7280;
+  --radius:12px;
+}
+
+/* Base layout (same as yang kamu pakai) */
+body{
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background:var(--bg);
+  color:#111;
+  margin:0;
+}
+.navbar{background:#fff;box-shadow:0 4px 18px rgba(13,110,253,0.08)}
+.navbar .brand{font-weight:700;color:var(--accent)}
+.hero{background:linear-gradient(90deg, rgba(13,110,253,0.95), rgba(6,95,70,0.9));color:#fff;padding:60px 0;text-align:center;border-bottom-left-radius:24px;border-bottom-right-radius:24px}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.card-prod{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 6px 20px rgba(16,24,40,0.06);transition:transform .18s}
+.card-prod:hover{transform:translateY(-6px)}
+.card-prod img{width:100%;height:160px;object-fit:cover}
+.card-body{padding:12px}
+.price{font-weight:600;color:var(--accent)}
+.footer{padding:24px;text-align:center;color:var(--muted)}
+.btn-outline-accent{border-color:var(--accent);color:var(--accent)}
+.theme-toggle{border:0;background:transparent;font-size:1.05rem}
+
+/* DARK MODE overrides */
+body.dark {
+  --bg: #071024;
+  --card: #0f1724;
+  --accent: #4da3ff;
+  color: #e6eef8;
+  background: var(--bg);
+}
+
+body.dark .card-prod{
+  background: var(--card);
+  box-shadow:0 6px 18px rgba(2,6,23,0.6);
+}
+
+body.dark .navbar{
+  background:#06132a !important;
+  color: #e6eef8;
+}
+
+body.dark .navbar .brand{
+  color: var(--accent);
+}
+
+body.dark .dropdown-menu{
+  background: #0f1724;
+  color: #e6eef8;
+}
+
+body.dark .card, body.dark .card-prod, body.dark .btn-outline-accent{
+  border-color: rgba(255,255,255,0.04);
+}
+
+/* small helpers */
+.container { max-width:1100px; margin:0 auto; padding:0 16px; }
