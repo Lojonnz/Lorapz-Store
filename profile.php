@@ -10,8 +10,8 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Ambil data user
-$stmt = $db->prepare("SELECT name, email FROM users WHERE user_id = ?");
+// Ambil data user (kolom baru)
+$stmt = $db->prepare("SELECT user_name, user_email FROM users WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
@@ -19,15 +19,18 @@ $user = $stmt->get_result()->fetch_assoc();
 // Update profil
 $success = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name']);
-    $email = trim($_POST['email']);
 
-    $stmt = $db->prepare("UPDATE users SET name = ?, email = ? WHERE user_id = ?");
-    $stmt->bind_param("ssi", $name, $email, $user_id);
+    $user_name  = trim($_POST['user_name']);
+    $user_email = trim($_POST['user_email']);
+
+    $stmt = $db->prepare("UPDATE users 
+                          SET user_name = ?, user_email = ?
+                          WHERE user_id = ?");
+    $stmt->bind_param("ssi", $user_name, $user_email, $user_id);
     $stmt->execute();
 
     $success = "Profil berhasil diperbarui!";
-    $_SESSION['username'] = $name;
+    $_SESSION['username'] = $user_name;
 }
 ?>
 <!DOCTYPE html>
@@ -44,7 +47,7 @@ body{background:var(--bg)}
 </head>
 <body>
 
-<?php include 'navbar.php'; ?> <!-- pakai navbar homepage -->
+<?php include 'navbar.php'; ?>
 
 <div class="container my-5">
     <h3>Profil Saya</h3>
@@ -55,14 +58,19 @@ body{background:var(--bg)}
 
     <div class="card p-4">
         <form method="POST">
+
             <div class="mb-3">
                 <label class="form-label">Nama Lengkap</label>
-                <input class="form-control" name="name" value="<?= htmlspecialchars($user['name']) ?>">
+                <input class="form-control" 
+                       name="user_name" 
+                       value="<?= htmlspecialchars($user['user_name']) ?>">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Email</label>
-                <input class="form-control" name="email" value="<?= htmlspecialchars($user['email']) ?>">
+                <input class="form-control" 
+                       name="user_email" 
+                       value="<?= htmlspecialchars($user['user_email']) ?>">
             </div>
 
             <button class="btn btn-primary">Simpan Perubahan</button>

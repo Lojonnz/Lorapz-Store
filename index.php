@@ -1,19 +1,33 @@
 <?php
-// homepage.php — Modular layout (Option C)
 session_start();
 require 'koneksi.php';
 
-// Ambil produk: 4 ebook terbaru + 4 service terbaru
-$ebooks = $db->query("SELECT ebook_id, title, price, cover_image, category FROM ebooks ORDER BY created_at DESC LIMIT 4");
-$services = $db->query("SELECT service_id, name AS title, price, thumbnail AS cover_image FROM services ORDER BY created_at DESC LIMIT 4");
+// Ambil 4 ebook terbaru
+$ebooks = $db->query("
+    SELECT ebook_id, ebook_title, ebook_price, ebook_cover_image, ebook_category 
+    FROM ebooks 
+    ORDER BY ebook_created_at DESC 
+    LIMIT 4
+");
 
-// Deteksi login
-$isLoggedIn = isset($_SESSION['username']);
-$isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+// Ambil 4 service terbaru
+$services = $db->query("
+    SELECT service_id, service_name, service_price, service_thumbnail, service_category 
+    FROM services 
+    ORDER BY service_created_at DESC 
+    LIMIT 4
+");
 
-// Fallback image dari upload history
-$fallback = '/mnt/data/67e14b3f-30f4-4645-96f5-d2833048eb72.png';
+// fallback image
+$fallback = 'assets/img/noimage.png'; 
 
+// Ambil role user
+$user_role = $_SESSION['role'] ?? 'user'; // default 'user'
+
+// Hanya tampilkan sidebar jika admin
+if ($user_role === 'admin') {
+    include 'sidebar.php';
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -22,81 +36,29 @@ $fallback = '/mnt/data/67e14b3f-30f4-4645-96f5-d2833048eb72.png';
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Lorapz Store — Marketplace</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="global.css">
 <style>
-:root{--accent:#0d6efd; --bg:#f4f6f9; --card:#fff; --muted:#6b7280; --radius:12px}
-body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:var(--bg);color:#111;margin:0}
-.navbar{background:#fff;box-shadow:0 4px 18px rgba(13,110,253,0.08)}
-.navbar .brand{font-weight:700;color:var(--accent)}
-.hero{background:linear-gradient(90deg, rgba(13,110,253,0.95), rgba(6,95,70,0.9));color:#fff;padding:60px 0;text-align:center;border-bottom-left-radius:24px;border-bottom-right-radius:24px}
-.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
-.card-prod{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 6px 20px rgba(16,24,40,0.06);transition:transform .18s}
-.card-prod:hover{transform:translateY(-6px)}
-.card-prod img{width:100%;height:160px;object-fit:cover}
-.card-body{padding:12px}
-.price{font-weight:600;color:var(--accent)}
-.footer{padding:24px;text-align:center;color:var(--muted)}
-.btn-outline-accent{border-color:var(--accent);color:var(--accent)}
-
-/* dark mode */
-body.dark{background:#071024;color:#e6eef8}
-body.dark .card-prod{background:#0f1724;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
-body.dark .navbar{background:#06132a}
-
-.theme-toggle{border:0;background:transparent;font-size:1.05rem}
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+  .card-prod { border: 1px solid #ddd; border-radius: 10px; overflow: hidden; transition: 0.2s; }
+  .card-prod img { width: 100%; height: 180px; object-fit: cover; }
+  .card-body { padding: 0.5rem 0.75rem; }
+  .price { font-weight: bold; }
 </style>
 </head>
 <body>
 
-<nav class="navbar py-3">
-  <div class="container d-flex justify-content-between align-items-center">
-    <a href="index.php" class="brand text-decoration-none">Lorapz Store</a>
+<?php include 'navbar.php'; ?>
 
-    <div class="d-flex align-items-center">
-        <button id="theme-toggle" class="theme-toggle me-3">🌓</button>
-
-        <?php if ($isLoggedIn): ?>
-            <!-- Dropdown Akun -->
-            <div class="dropdown me-2">
-                <button class="btn btn-sm btn-outline-accent dropdown-toggle" 
-                        type="button" 
-                        data-bs-toggle="dropdown" 
-                        aria-expanded="false">
-                    Akun (<?= htmlspecialchars($_SESSION['username']) ?>)
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <?php if ($isAdmin): ?>
-                        <li><a class="dropdown-item" href="dashboard.php">Dashboard Admin</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                    <?php endif; ?>
-                    <li><a class="dropdown-item" href="profile.php">Profil Saya</a></li>
-                    <li><a class="dropdown-item" href="orders.php">Riwayat Pembelian</a></li>
-                </ul>
-            </div>
-
-            <!-- Logout -->
-            <a class="btn btn-sm btn-outline-secondary" href="logout.php">Logout</a>
-
-        <?php else: ?>
-            <!-- Belum Login -->
-            <a class="btn btn-sm btn-primary" href="login.php">Login</a>
-        <?php endif; ?>
-    </div>
-
-  </div>
-</nav>
-
-
-<section class="hero">
+<section class="hero py-5 bg-light text-center">
   <div class="container">
     <h1 style="font-size:2.2rem;margin-bottom:.4rem">Temukan E-Book & Jasa Digital Berkualitas</h1>
-    <p style="opacity:.95;max-width:760px;margin:auto">Kurikulum, template, dan layanan profesional — langsung bisa dibeli dan diunduh. Pilih kategori di bawah untuk mulai menjelajah.</p>
+    <p style="opacity:.95;max-width:760px;margin:auto">Kurikulum, template, dan layanan profesional yang langsung bisa dibeli dan diunduh.</p>
   </div>
 </section>
 
 <main class="container my-5">
 
-  <!-- Featured & Quick Links -->
+  <!-- Highlight + search -->
   <div class="row mb-4">
     <div class="col-md-8">
       <div class="card p-3">
@@ -110,7 +72,7 @@ body.dark .navbar{background:#06132a}
         <form action="search.php" method="get">
             <div class="input-group">
                 <input name="q" class="form-control" placeholder="Cari ebook atau layanan...">
-                <button class="btn btn-outline-accent" type="submit">Cari</button>
+                <button class="btn btn-outline-primary" type="submit">Cari</button>
             </div>
         </form>
       </div>
@@ -118,77 +80,72 @@ body.dark .navbar{background:#06132a}
   </div>
 
   <!-- EBOOKS -->
-  <section class="mb-5">
-    <div class="section-title">
-      <h4>E-Book Terbaru</h4>
-      <a href="ebooks.php" class="small text-muted">Lihat Semua →</a>
-    </div>
+<section class="mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>E-Book Terbaru</h4>
+    <a href="ebooks.php" class="small text-muted">Lihat Semua →</a>
+  </div>
 
-    <div class="grid">
-      <?php if ($ebooks && $ebooks->num_rows > 0): ?>
-        <?php while ($e = $ebooks->fetch_assoc()):
-            $img = !empty($e['cover_image']) ? 'uploads/'.htmlspecialchars($e['cover_image']) : $fallback;
-            $title = htmlspecialchars($e['title']);
-        ?>
-        <div class="card-prod">
-          <img src="<?= $img ?>" alt="<?= $title ?>" onerror="this.src='<?= $fallback ?>'">
-          <div class="card-body">
-            <h6 style="margin:0;"><?= $title ?></h6>
-            <div class="text-muted small"><?= htmlspecialchars($e['category'] ?? '') ?></div>
-            <div class="d-flex justify-content-between align-items-center mt-2">
-              <div class="price">Rp <?= number_format($e['price'],0,',','.') ?></div>
-              <div>
-                <a class="btn btn-sm btn-outline-accent" href="product.php?id=<?= $e['ebook_id'] ?>&type=ebook">Detail</a>
-                <a class="btn btn-sm btn-primary" href="buy.php?id=<?= $e['ebook_id'] ?>&type=ebook">Beli</a>
-              </div>
-            </div>
-          </div>
+  <div class="grid">
+    <?php if ($ebooks->num_rows > 0): ?>
+      <?php while ($e = $ebooks->fetch_assoc()):
+          $img = $e['ebook_cover_image'] && file_exists($e['ebook_cover_image'])
+                 ? $e['ebook_cover_image']
+                 : $fallback;
+      ?>
+      <div class="card-prod text-center">
+        <a href="product.php?id=<?= $e['ebook_id'] ?>&type=ebook">
+          <img src="<?= $img ?>" alt="Cover Ebook" onerror="this.src='<?= $fallback ?>'">
+        </a>
+        <div class="card-body">
+          <h6 class="mb-1"><?= htmlspecialchars($e['ebook_title']) ?></h6>
+          <div class="price mb-2">Rp <?= number_format($e['ebook_price'],0,',','.') ?></div>
+          <a class="btn btn-sm btn-outline-primary" href="product.php?id=<?= $e['ebook_id'] ?>&type=ebook">Detail</a>
         </div>
-        <?php endwhile; ?>
-      <?php else: ?>
-        <div class="card p-4">Belum ada ebook.</div>
-      <?php endif; ?>
-    </div>
-  </section>
+      </div>
+      <?php endwhile; ?>
+    <?php else: ?>
+      <div class="card p-4">Belum ada ebook.</div>
+    <?php endif; ?>
+  </div>
+</section>
 
-  <!-- SERVICES -->
-  <section class="mb-5">
-    <div class="section-title">
-      <h4>Jasa & Layanan</h4>
-      <a href="services.php" class="small text-muted">Lihat Semua →</a>
-    </div>
+<!-- SERVICES -->
+<section class="mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Jasa & Layanan</h4>
+    <a href="services.php" class="small text-muted">Lihat Semua →</a>
+  </div>
 
-    <div class="grid">
-      <?php if ($services && $services->num_rows > 0): ?>
-        <?php while ($s = $services->fetch_assoc()):
-            $img = !empty($s['cover_image']) ? 'uploads/'.htmlspecialchars($s['cover_image']) : $fallback;
-            $title = htmlspecialchars($s['title']);
-        ?>
-        <div class="card-prod">
-          <img src="<?= $img ?>" alt="<?= $title ?>" onerror="this.src='<?= $fallback ?>'">
-          <div class="card-body">
-            <h6 style="margin:0;"><?= $title ?></h6>
-            <div class="text-muted small">Jasa Profesional</div>
-            <div class="d-flex justify-content-between align-items-center mt-2">
-              <div class="price">Rp <?= number_format($s['price'],0,',','.') ?></div>
-              <div>
-                <a class="btn btn-sm btn-outline-accent" href="product.php?id=<?= $s['service_id'] ?>&type=service">Detail</a>
-                <a class="btn btn-sm btn-primary" href="buy.php?id=<?= $s['service_id'] ?>&type=service">Beli</a>
-              </div>
-            </div>
-          </div>
+  <div class="grid">
+    <?php if ($services->num_rows > 0): ?>
+      <?php while ($s = $services->fetch_assoc()):
+          $img = $s['service_thumbnail'] && file_exists($s['service_thumbnail'])
+                 ? $s['service_thumbnail']
+                 : $fallback;
+      ?>
+      <div class="card-prod text-center">
+        <a href="product.php?id=<?= $s['service_id'] ?>&type=service">
+          <img src="<?= $img ?>" alt="Thumbnail Service" onerror="this.src='<?= $fallback ?>'">
+        </a>
+        <div class="card-body">
+          <h6 class="mb-1"><?= htmlspecialchars($s['service_name']) ?></h6>
+          <div class="price mb-2">Rp <?= number_format($s['service_price'],0,',','.') ?></div>
+          <a class="btn btn-sm btn-outline-primary" href="product.php?id=<?= $s['service_id'] ?>&type=service">Detail</a>
         </div>
-        <?php endwhile; ?>
-      <?php else: ?>
-        <div class="card p-4">Belum ada layanan.</div>
-      <?php endif; ?>
-    </div>
-  </section>
+      </div>
+      <?php endwhile; ?>
+    <?php else: ?>
+      <div class="card p-4">Belum ada layanan.</div>
+    <?php endif; ?>
+  </div>
+</section>
+
 
 </main>
 
-<footer class="footer">
-  <div class="container footer">
+<footer class="footer py-3 bg-light">
+  <div class="container">
     <div class="row">
       <div class="col-md-6 text-start">
         <strong>Lorapz Store</strong><br>Marketplace E-Book & Jasa Digital
@@ -200,15 +157,7 @@ body.dark .navbar{background:#06132a}
   </div>
 </footer>
 
-<script>
-// Theme toggle
-const tbtn = document.getElementById('theme-toggle');
-tbtn.addEventListener('click', ()=>{
-    document.body.classList.toggle('dark');
-    localStorage.setItem('lorapz_theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-});
-if (localStorage.getItem('lorapz_theme') === 'dark') document.body.classList.add('dark');
-</script>
+<script src="global.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -10,15 +10,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password_raw = $_POST['password'];
     $confirm_raw = $_POST['confirm_password'];
 
-    // Cek password dan confirm
+    // Cek password sama
     if ($password_raw !== $confirm_raw) {
         $error = "Password tidak sama!";
     } else {
         // Hash password
         $password = password_hash($password_raw, PASSWORD_DEFAULT);
 
-        // Cek email terdaftar
-        $cek = $db->prepare("SELECT * FROM users WHERE email = ?");
+        // Cek email terdaftar (gunakan kolom baru user_email)
+        $cek = $db->prepare("SELECT user_id FROM users WHERE user_email = ?");
         $cek->bind_param("s", $email);
         $cek->execute();
         $result = $cek->get_result();
@@ -26,7 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result->num_rows > 0) {
             $error = "Email sudah terdaftar!";
         } else {
-            $q = $db->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'user')");
+
+            // Insert user (kolom baru: user_name, user_email, user_password, user_role)
+            $q = $db->prepare("
+                INSERT INTO users (user_name, user_email, user_password, user_role, user_created_at)
+                VALUES (?, ?, ?, 'user', NOW())
+            ");
             $q->bind_param("sss", $name, $email, $password);
             $q->execute();
 
@@ -44,8 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Register - Lorapz Store</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Bootstrap Icons -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
 <style>
@@ -186,17 +189,6 @@ document.getElementById("confirmPassword").addEventListener("input", function ()
         text.innerHTML = "";
     }
 });
-
-// ==== DISABLED SUBMIT IF NOT VALID ====
-document.querySelector("form").onsubmit = function (e) {
-    const pwd = document.getElementById("password").value;
-    const confirm = document.getElementById("confirmPassword").value;
-
-    if (pwd !== confirm) {
-        e.preventDefault();
-        alert("Password dan konfirmasi tidak cocok!");
-    }
-};
 </script>
 
 </body>

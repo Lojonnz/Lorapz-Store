@@ -6,7 +6,6 @@ require 'koneksi.php';
 $username = $_SESSION['username'] ?? "Lorapz Store";
 ?>
 
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -19,24 +18,6 @@ $username = $_SESSION['username'] ?? "Lorapz Store";
         body {
             background-color: #f4f6f9;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .sidebar {
-            background-color: #0d6efd;
-            height: 100vh;
-            color: #fff;
-            position: fixed;
-            width: 220px;
-            padding-top: 20px;
-        }
-        .sidebar a {
-            color: white;
-            display: block;
-            padding: 12px 20px;
-            text-decoration: none;
-            border-radius: 8px;
-        }
-        .sidebar a:hover {
-            background: rgba(255,255,255,0.2);
         }
         .main {
             margin-left: 220px;
@@ -55,19 +36,8 @@ $username = $_SESSION['username'] ?? "Lorapz Store";
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h4 class="text-center mb-4">Lorapz Store</h4>
-        <a href="index.php">Halaman Utama</a>
-        <a href="#">Produk</a>
-        <a href="#">Transaksi</a>
-        <a href="#">Pelanggan</a>
-        <a href="#">Laporan</a>
-        <a href="#">Pengaturan</a>
-        <hr>
-        <a href="logout.php">Keluar</a>
-    </div>
-
+    <?php include 'sidebar.php'; ?>
+    
     <!-- Main Content -->
     <div class="main">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -82,7 +52,6 @@ $username = $_SESSION['username'] ?? "Lorapz Store";
                     <h6 class="text-muted">Total Pengguna</h6>
                     <h3>
                         <?php
-                        require 'koneksi.php';
                         $q = $db->query("SELECT COUNT(*) AS total FROM users");
                         echo $q->fetch_assoc()['total'];
                         ?>
@@ -120,7 +89,11 @@ $username = $_SESSION['username'] ?? "Lorapz Store";
                     <h3 class="text-success">
                         Rp 
                         <?php
-                        $q = $db->query("SELECT SUM(total_price) AS revenue FROM orders WHERE payment_status='paid'");
+                        $q = $db->query("
+                            SELECT SUM(order_total_price) AS revenue 
+                            FROM orders 
+                            WHERE order_payment_status='paid'
+                        ");
                         echo number_format($q->fetch_assoc()['revenue'] ?? 0, 0, ',', '.');
                         ?>
                     </h3>
@@ -139,23 +112,22 @@ $username = $_SESSION['username'] ?? "Lorapz Store";
                 <?php
                     $penjualan = $db->query("
                         SELECT 
-                            DATE_FORMAT(created_at, '%Y-%m') AS bulan,
-                            SUM(total_price) AS total
+                            DATE_FORMAT(order_created_at, '%Y-%m') AS bulan,
+                            SUM(order_total_price) AS total
                         FROM orders
-                        WHERE payment_status='paid'
-                        GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+                        WHERE order_payment_status='paid'
+                        GROUP BY DATE_FORMAT(order_created_at, '%Y-%m')
                         ORDER BY bulan
                     ");
 
                     $labels = [];
                     $values = [];
 
-                while ($row = $penjualan->fetch_assoc()) {
-                    $labels[] = $row['bulan'];
-                    $values[] = $row['total'];
-                }
+                    while ($row = $penjualan->fetch_assoc()) {
+                        $labels[] = $row['bulan'];
+                        $values[] = $row['total'];
+                    }
                 ?>
-
 
                 <script>
                     const ctx = document.getElementById('salesChart').getContext('2d');
@@ -195,10 +167,10 @@ $username = $_SESSION['username'] ?? "Lorapz Store";
 
                         <?php
                         $q = $db->query("
-                            SELECT o.*, u.name 
+                            SELECT o.*, u.user_name 
                             FROM orders o
                             JOIN users u ON u.user_id = o.user_id
-                            ORDER BY o.created_at DESC
+                            ORDER BY o.order_created_at DESC
                             LIMIT 10
                         ");
 
@@ -206,10 +178,10 @@ $username = $_SESSION['username'] ?? "Lorapz Store";
                             echo "
                                 <tr>
                                     <td>{$r['order_id']}</td>
-                                    <td>{$r['name']}</td>
-                                    <td>Rp " . number_format($r['total_price'], 0, ',', '.') . "</td>
-                                    <td>{$r['payment_status']}</td>
-                                    <td>{$r['created_at']}</td>
+                                    <td>{$r['user_name']}</td>
+                                    <td>Rp " . number_format($r['order_total_price'], 0, ',', '.') . "</td>
+                                    <td>{$r['order_payment_status']}</td>
+                                    <td>{$r['order_created_at']}</td>
                                 </tr>
                             ";
                         }
@@ -221,6 +193,6 @@ $username = $_SESSION['username'] ?? "Lorapz Store";
             </div>
         </div>
 
-    </div> <!-- end main -->
+    </div>
 </body>
 </html>

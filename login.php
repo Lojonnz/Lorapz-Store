@@ -5,10 +5,17 @@ session_start();
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $email = trim($_POST['email']);
     $password = $_POST['password'];
 
-    $q = $db->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
+    // SELECT berdasarkan kolom baru
+    $q = $db->prepare("
+        SELECT user_id, user_name, user_email, user_password, user_role
+        FROM users 
+        WHERE user_email = ?
+        LIMIT 1
+    ");
     $q->bind_param("s", $email);
     $q->execute();
     $result = $q->get_result();
@@ -16,12 +23,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
 
-        if (password_verify($password, $user['password'])) {
-            $_SESSION['username'] = $user['name'];
-            $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['role'] = $user['role'];
+        // verify password berdasarkan field baru
+        if (password_verify($password, $user['user_password'])) {
 
-            if ($user['role'] === 'admin') {
+            // session pakai key baru
+            $_SESSION['username'] = $user['user_name'];
+            $_SESSION['user_id'] = $user['user_id'];
+            $_SESSION['role'] = $user['user_role'];
+
+            // redirect berdasarkan role
+            if ($user['user_role'] === 'admin') {
                 header("Location: dashboard.php");
             } else {
                 header("Location: index.php");
@@ -40,8 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login - Lorapz Store</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Bootstrap Icons -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 
