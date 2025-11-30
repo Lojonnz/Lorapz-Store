@@ -1,23 +1,37 @@
-// global.js — theme toggle & safe DOM ready
+// global.js — smooth theme toggle & safe DOM ready
 document.addEventListener('DOMContentLoaded', function () {
 
-  // Theme toggle: attach safely (works even when navbar is included)
+  const body = document.body;
   const tbtn = document.getElementById('theme-toggle');
+
+  // =============================
+  // APPLY SAVED THEME ON LOAD
+  // =============================
+  try {
+    const saved = localStorage.getItem('lorapz_theme');
+    if (saved === 'dark') {
+      body.classList.add('dark');
+    }
+  } catch (e) { console.warn(e); }
+
+  // =============================
+  // THEME TOGGLE BUTTON
+  // =============================
   if (tbtn) {
     tbtn.addEventListener('click', function () {
-      document.body.classList.toggle('dark');
-      // persist choice
+      // add temporary transition class
+      body.classList.add('theme-transition');
+      
+      // toggle dark
+      body.classList.toggle('dark');
+
+      // save preference
       try {
-        localStorage.setItem('lorapz_theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-      } catch (e) { /* ignore storage errors */ }
+        localStorage.setItem('lorapz_theme', body.classList.contains('dark') ? 'dark' : 'light');
+      } catch(e) {}
+      
+      // remove transition after animation
+      setTimeout(() => body.classList.remove('theme-transition'), 300);
     });
   }
-
-  // apply saved theme on load
-  try {
-    if (localStorage.getItem('lorapz_theme') === 'dark') {
-      document.body.classList.add('dark');
-    }
-  } catch (e) { /* ignore */ }
-
 });

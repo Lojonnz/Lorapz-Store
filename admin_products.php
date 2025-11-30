@@ -1,11 +1,16 @@
 <?php
-session_start();
+require 'admin_check.php';
 require 'koneksi.php';
 
-// cek admin
+// Pastikan hanya admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: index.php");
     exit;
+}
+
+$user_role = $_SESSION['role'];
+if ($user_role === 'admin') {
+    include 'sidebar.php';
 }
 
 // Ambil semua ebook
@@ -30,16 +35,23 @@ $fallback = 'assets/img/noimage.png';
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Admin – Kelola Produk</title>
+
+<!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Global CSS (theme + layout) -->
 <link rel="stylesheet" href="global.css">
+
 <style>
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
-.card-prod { border: 1px solid #ddd; border-radius: 10px; overflow: hidden; transition: 0.2s; }
+.card-prod { border: 1px solid rgba(0,0,0,0.05); border-radius: var(--radius); overflow: hidden; transition: transform 0.2s; background: var(--card); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.card-prod:hover { transform: translateY(-4px); }
 .card-prod img { width: 100%; height: 180px; object-fit: cover; }
 .card-body { padding: 0.5rem 0.75rem; }
-.price { font-weight: bold; }
-.action-btn { font-size: 13px; padding: 5px 10px; border-radius: 6px; margin: 2px; text-decoration: none; }
-.edit { background: #0d6efd; color: white; }
+.price { font-weight: bold; color: var(--accent); }
+.action-btn { font-size: 13px; padding: 5px 10px; border-radius: 6px; margin: 2px; text-decoration: none; display: inline-block; }
+.edit { background: var(--accent); color: white; }
+.edit:hover { opacity: 0.85; }
 .delete { background: #dc3545; color: white; }
 .delete:hover { opacity: 0.85; }
 </style>
@@ -129,6 +141,10 @@ if (isset($_GET['delete'], $_GET['id'])) {
 }
 ?>
 
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Global JS (theme toggle + DOM ready) -->
+<script src="global.js"></script>
 </body>
 </html>

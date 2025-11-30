@@ -2,6 +2,12 @@
 session_start();
 require 'koneksi.php';
 
+// Ambil role user
+$user_role = $_SESSION['role'] ?? 'user';
+
+// Sidebar admin
+if ($user_role === 'admin') include 'sidebar.php';
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
@@ -56,51 +62,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Profil Saya</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<style>
-body {background:#f4f6f9;}
-.card {border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.08);}
-.change-password-text {color:#0d6efd; cursor:pointer; display:inline-block; margin-top:5px;}
-.change-password-text:hover {text-decoration:underline;}
-</style>
+<link rel="stylesheet" href="global.css">
 </head>
-<body>
+<body class="theme-body">
 
 <?php include 'navbar.php'; ?>
 
 <div class="container my-5">
-    <h3>Profil Saya</h3>
+    <h3 class="theme-text">Profil Saya</h3>
 
     <?php if ($success): ?>
-        <div class="alert alert-success"><?= $success ?></div>
+        <div class="alert alert-success theme-alert"><?= $success ?></div>
     <?php endif; ?>
     <?php if ($error): ?>
-        <div class="alert alert-danger"><?= $error ?></div>
+        <div class="alert alert-danger theme-alert"><?= $error ?></div>
     <?php endif; ?>
 
-    <div class="card p-4">
+    <div class="card p-4 theme-card">
         <form method="POST">
             <!-- Nama -->
             <div class="mb-3">
-                <label class="form-label">Nama Lengkap</label>
-                <input class="form-control" name="user_name" value="<?= htmlspecialchars($user['user_name']) ?>">
+                <label class="form-label theme-text">Nama Lengkap</label>
+                <input class="form-control theme-input" name="user_name" value="<?= htmlspecialchars($user['user_name']) ?>">
             </div>
 
             <!-- Email -->
             <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input class="form-control" name="user_email" value="<?= htmlspecialchars($user['user_email']) ?>">
+                <label class="form-label theme-text">Email</label>
+                <input class="form-control theme-input" name="user_email" value="<?= htmlspecialchars($user['user_email']) ?>">
             </div>
 
             <!-- Password (readonly) -->
             <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" class="form-control" value="********" readonly>
-                <span class="change-password-text" data-bs-toggle="modal" data-bs-target="#passwordModal">
-                    Change Password
+                <label class="form-label theme-text">Password</label>
+                <input type="password" class="form-control theme-input" value="********" readonly>
+                <span class="change-password-text theme-link" data-bs-toggle="modal" data-bs-target="#passwordModal">
+                    Ganti Password
                 </span>
             </div>
 
-            <button class="btn btn-primary">Simpan Perubahan</button>
+            <button class="btn btn-primary theme-btn">Simpan Perubahan</button>
         </form>
     </div>
 </div>
@@ -108,10 +109,10 @@ body {background:#f4f6f9;}
 <!-- Modal Ganti Password -->
 <div class="modal fade" id="passwordModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
-    <div class="modal-content">
+    <div class="modal-content theme-card">
       <form method="POST">
         <div class="modal-header">
-          <h5 class="modal-title">Ganti Password</h5>
+          <h5 class="modal-title theme-text">Ganti Password</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -119,9 +120,9 @@ body {background:#f4f6f9;}
           <input type="hidden" name="user_email" value="<?= htmlspecialchars($user['user_email']) ?>">
 
           <div class="mb-3">
-            <label class="form-label">Password Lama</label>
+            <label class="form-label theme-text">Password Lama</label>
             <div class="input-group">
-                <input type="password" class="form-control" name="current_password" id="currentPassword" required>
+                <input type="password" class="form-control theme-input" name="current_password" id="currentPassword" required>
                 <span class="input-group-text toggle-password" data-target="currentPassword" style="cursor:pointer">
                     <i class="bi bi-eye-slash" id="icon-currentPassword"></i>
                 </span>
@@ -129,9 +130,9 @@ body {background:#f4f6f9;}
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Password Baru</label>
+            <label class="form-label theme-text">Password Baru</label>
             <div class="input-group">
-                <input type="password" class="form-control" name="new_password" id="newPassword" required>
+                <input type="password" class="form-control theme-input" name="new_password" id="newPassword" required>
                 <span class="input-group-text toggle-password" data-target="newPassword" style="cursor:pointer">
                     <i class="bi bi-eye-slash" id="icon-newPassword"></i>
                 </span>
@@ -139,9 +140,9 @@ body {background:#f4f6f9;}
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Konfirmasi Password Baru</label>
+            <label class="form-label theme-text">Konfirmasi Password Baru</label>
             <div class="input-group">
-                <input type="password" class="form-control" name="confirm_password" id="confirmPassword" required>
+                <input type="password" class="form-control theme-input" name="confirm_password" id="confirmPassword" required>
                 <span class="input-group-text toggle-password" data-target="confirmPassword" style="cursor:pointer">
                     <i class="bi bi-eye-slash" id="icon-confirmPassword"></i>
                 </span>
@@ -149,14 +150,16 @@ body {background:#f4f6f9;}
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary">Ganti Password</button>
+          <button type="button" class="btn btn-secondary theme-btn" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary theme-btn">Ganti Password</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
+<?php include 'footer.php'; ?>
+<script src="global.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.querySelectorAll('.toggle-password').forEach(span=>{

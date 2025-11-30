@@ -1,63 +1,176 @@
-:root{
-  --accent:#0d6efd;
-  --bg:#f4f6f9;
-  --card:#fff;
-  --muted:#6b7280;
-  --radius:12px;
+/* ==============================
+   LORAPZ GLOBAL CSS
+   ============================== */
+
+/* ===== Variables ===== */
+:root {
+  --accent: #0d6efd;
+  --bg: #f4f6f9;
+  --card: #fff;
+  --text: #111;
+  --muted: #6b7280;
+  --radius: 12px;
+  --navbar-footer: #444;
+  --btn-bg: #0d6efd;
+  --btn-text: #fff;
 }
 
-/* Base layout (same as yang kamu pakai) */
-body{
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background:var(--bg);
-  color:#111;
-  margin:0;
-}
-.navbar{background:#fff;box-shadow:0 4px 18px rgba(13,110,253,0.08)}
-.navbar .brand{font-weight:700;color:var(--accent)}
-.hero{background:linear-gradient(90deg, rgba(13,110,253,0.95), rgba(6,95,70,0.9));color:#fff;padding:60px 0;text-align:center;border-bottom-left-radius:24px;border-bottom-right-radius:24px}
-.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
-.card-prod{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 6px 20px rgba(16,24,40,0.06);transition:transform .18s}
-.card-prod:hover{transform:translateY(-6px)}
-.card-prod img{width:100%;height:160px;object-fit:cover}
-.card-body{padding:12px}
-.price{font-weight:600;color:var(--accent)}
-.footer{padding:24px;text-align:center;color:var(--muted)}
-.btn-outline-accent{border-color:var(--accent);color:var(--accent)}
-.theme-toggle{border:0;background:transparent;font-size:1.05rem}
-
-/* DARK MODE overrides */
-body.dark {
-  --bg: #071024;
-  --card: #0f1724;
-  --accent: #4da3ff;
-  color: #e6eef8;
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
   background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
 }
 
-body.dark .card-prod{
-  background: var(--card);
-  box-shadow:0 6px 18px rgba(2,6,23,0.6);
+/* ===== Navbar & Footer ===== */
+.navbar, .footer {
+  background: var(--navbar-footer);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
 }
 
-body.dark .navbar{
-  background:#06132a !important;
-  color: #e6eef8;
-}
-
-body.dark .navbar .brand{
+.navbar .brand {
+  font-weight: 700;
   color: var(--accent);
 }
 
-body.dark .dropdown-menu{
-  background: #0f1724;
-  color: #e6eef8;
+.footer {
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
 }
 
-body.dark .card, body.dark .card-prod, body.dark .btn-outline-accent{
-  border-color: rgba(255,255,255,0.04);
+/* ===== Buttons ===== */
+.btn, .btn-primary, .btn-outline-accent {
+  border-radius: var(--radius);
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
 
-/* small helpers */
-.container { max-width:1100px; margin:0 auto; padding:0 16px; }
+.btn-outline-accent {
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  background: transparent;
+}
+
+.btn-primary {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+}
+
+.btn-primary:hover, .btn-outline-accent:hover {
+  opacity: 0.85;
+}
+
+/* ===== Cards ===== */
+.card, .card-prod {
+  background: var(--card);
+  color: var(--text);
+  border-radius: var(--radius);
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 6px 20px rgba(16,24,40,0.06);
+  transition: background 0.3s, color 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+
+.card-prod:hover {
+  transform: translateY(-6px);
+}
+
+/* ===== Grid ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+/* ===== Inputs / Forms ===== */
+input, textarea, select {
+  border-radius: var(--radius);
+  border: 1px solid rgba(0,0,0,0.1);
+  background: var(--card);
+  color: var(--text);
+  padding: 8px 12px;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ===== Text Helpers ===== */
+.text-primary {
+  color: var(--accent);
+}
+
+p, span, label, small, h1,h2,h3,h4,h5,h6, a {
+  color: var(--text);
+  transition: color 0.3s;
+}
+
+/* ===== Hero Section ===== */
+.hero {
+  background: linear-gradient(90deg, rgba(13,110,253,0.95), rgba(6,95,70,0.9));
+  color: #fff;
+  padding: 60px 0;
+  text-align: center;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+
+/* ===== Responsive Container ===== */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* ===== Dark Mode ===== */
+body.dark {
+  --bg: #2c2c2c;
+  --card: #3a3a3a;
+  --text: #f1f1f1;
+  --muted: #c1c1c1;
+  --accent: #4da3ff;
+  --navbar-footer: #222;
+  --btn-bg: #1565c0;
+  --btn-text: #fff;
+}
+
+body.dark .card, body.dark .card-prod {
+  background: var(--card);
+  color: var(--text);
+  border-color: rgba(255,255,255,0.1);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+
+body.dark .navbar, body.dark .footer {
+  background: var(--navbar-footer);
+  color: var(--text);
+}
+
+body.dark input, body.dark textarea, body.dark select {
+  background: var(--card);
+  color: var(--text);
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* ===== Media Queries ===== */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .card-prod img {
+    height: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  .card-prod img {
+    height: 120px;
+  }
+}

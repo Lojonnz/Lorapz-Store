@@ -2,6 +2,14 @@
 session_start();
 require 'koneksi.php';
 
+// Ambil role user
+$user_role = $_SESSION['role'] ?? 'user'; // default 'user'
+
+// Hanya tampilkan sidebar jika admin
+if ($user_role === 'admin') {
+    include 'sidebar.php';
+}
+
 // Ambil semua service
 $services = $db->query("
     SELECT service_id, service_name, service_price, service_thumbnail, service_category 

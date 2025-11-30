@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 $isLoggedIn = isset($_SESSION['username']);
 $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 ?>
-<nav class="navbar py-3 navbar-expand-lg navbar-light bg-light">
+<nav class="navbar py-3 navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
   <div class="container d-flex justify-content-between align-items-center">
     <a href="index.php" class="brand text-decoration-none fw-bold fs-4">Lorapz Store</a>
 
@@ -20,7 +20,7 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
             <?php if ($isAdmin): ?>
-              <li><a class="dropdown-item" href="dashboard.php">Dashboard Admin</a></li>
+              <li><a class="dropdown-item" href="admin_dashboard.php">Dashboard Admin</a></li>
               <li><hr class="dropdown-divider"></li>
             <?php endif; ?>
             <li><a class="dropdown-item" href="profile.php">Profil Saya</a></li>

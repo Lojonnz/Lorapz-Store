@@ -2,6 +2,14 @@
 require 'admin_check.php';
 require 'koneksi.php';
 
+// Ambil role user
+$user_role = $_SESSION['role'] ?? 'user'; // default 'user'
+
+// Hanya tampilkan sidebar jika admin
+if ($user_role === 'admin') {
+    include 'sidebar.php';
+}
+
 // Ambil username
 $username = $_SESSION['username'] ?? "Lorapz Store";
 ?>
@@ -13,6 +21,7 @@ $username = $_SESSION['username'] ?? "Lorapz Store";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Lorapz Store</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="global.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
@@ -36,7 +45,7 @@ $username = $_SESSION['username'] ?? "Lorapz Store";
 </head>
 <body>
 
-    <?php include 'sidebar.php'; ?>
+    <?php include 'navbar.php'; ?>
     
     <!-- Main Content -->
     <div class="main">
@@ -194,5 +203,7 @@ $username = $_SESSION['username'] ?? "Lorapz Store";
         </div>
 
     </div>
+    <?php include 'footer.php'; ?>
+    <script src="global.js"></script>
 </body>
 </html>
