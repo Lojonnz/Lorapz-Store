@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 require 'koneksi.php';
 
 if (!isset($_SESSION['user_id'])) {
@@ -32,11 +34,9 @@ if ($type === 'ebook') {
     $category = $ebook['ebook_category'];
     $price = $ebook['ebook_price'];
 
-    $cover = (file_exists($ebook['ebook_cover_image']))
-        ? $ebook['ebook_cover_image'] : $fallback;
-
-    $preview = (file_exists($ebook['ebook_preview_file']))
-        ? $ebook['ebook_preview_file'] : null;
+    // Tidak pakai file_exists — langsung cek value
+    $cover = !empty($ebook['ebook_cover_image']) ? $ebook['ebook_cover_image'] : $fallback;
+    $preview = !empty($ebook['ebook_preview_file']) ? $ebook['ebook_preview_file'] : null;
 
     $description = $ebook['ebook_description'];
 
@@ -51,9 +51,7 @@ if ($type === 'ebook') {
     $category = $service['service_category'];
     $price = $service['service_price'];
 
-    $cover = (file_exists($service['service_thumbnail']))
-        ? $service['service_thumbnail'] : $fallback;
-
+    $cover = !empty($service['service_thumbnail']) ? $service['service_thumbnail'] : $fallback;
     $description = $service['service_description'];
 }
 
@@ -61,30 +59,45 @@ if ($type === 'ebook') {
    TOMBOL TAMBAH KERANJANG
    =========================== */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quantity'])) {
-    $user_id = $_SESSION['user_id'];
-    $qty = max(1, intval($_POST['quantity']));
-    $total_price = $price * $qty;
 
-    $stmt = $db->prepare("
-        INSERT INTO orders
-        (user_id, order_total_price, order_payment_status, order_type, product_type, product_id, order_approved, order_created_at)
-        VALUES (?, ?, 'pending', ?, ?, ?, 0, NOW())
-    ");
-
-    $stmt->bind_param("idssi", $user_id, $total_price, $type, $type, $id);
-
-    if ($stmt->execute()) {
-        $added_msg = "Produk berhasil ditambahkan ke keranjang!";
-    } else {
-        $added_msg = "Gagal menambahkan ke keranjang: " . $stmt->error;
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
     }
+
+    $qty = max(1, intval($_POST['quantity']));
+
+    // Cek apakah item sudah ada di keranjang
+    $found = false;
+
+    foreach ($_SESSION['cart'] as &$c) {
+        if ($c['id'] == $id && $c['type'] == $type) {
+            $c['qty'] += $qty;
+            $found = true;
+            break;
+        }
+    }
+
+    if (!$found) {
+        $_SESSION['cart'][] = [
+            'id'    => $id,
+            'type'  => $type,
+            'title' => $title,
+            'price' => $price,
+            'qty'   => $qty,
+            'cover' => $cover
+        ];
+    }
+
+    header("Location: product.php?id=$id&type=$type&added=1");
+    exit;
 }
+
 
 /* ===========================
    PREVIEW FILE
    =========================== */
 function renderPreview($file) {
-    if (!$file || !file_exists($file)) return '';
+    if (!$file) return '';
 
     $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
@@ -93,7 +106,7 @@ function renderPreview($file) {
     }
 
     if ($ext === 'pdf') {
-        return "<iframe src='$file' style='width:100%; height:500px;' class='mt-3' sandbox=''></iframe>";
+        return "<iframe src='$file' style='width:100%; height:500px;' class='mt-3'></iframe>";
     }
 
     if ($ext === 'txt') {
@@ -126,8 +139,8 @@ function renderPreview($file) {
 
 <div class="container mt-4">
 
-    <?php if(isset($added_msg)): ?>
-        <div class="alert alert-success"><?= $added_msg ?></div>
+    <?php if(isset($_GET['added'])): ?>
+        <div class="alert alert-success">Produk berhasil dimasukkan ke keranjang!</div>
     <?php endif; ?>
 
     <div class="card p-4 mb-4">

@@ -24,7 +24,9 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
               <li><hr class="dropdown-divider"></li>
             <?php endif; ?>
             <li><a class="dropdown-item" href="profile.php">Profil Saya</a></li>
-            <li><a class="dropdown-item" href="orders.php">Riwayat Pembelian</a></li>
+            <li><a class="dropdown-item" href="myebooks.php">Ebooks Saya</a></li>
+            <li><a class="dropdown-item" href="cart.php">Cart</a></li>
+            <li><a class="dropdown-item" href="orders.php">Orders</a></li>
           </ul>
         </div>
         <a class="btn btn-sm btn-outline-secondary" href="logout.php">Logout</a>

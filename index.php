@@ -2,6 +2,9 @@
 session_start();
 require 'koneksi.php';
 
+// fallback image
+$fallback = 'assets/img/noimage.png'; 
+
 // Ambil 4 ebook terbaru
 $ebooks = $db->query("
     SELECT ebook_id, ebook_title, ebook_price, ebook_cover_image, ebook_category 
@@ -18,9 +21,6 @@ $services = $db->query("
     LIMIT 4
 ");
 
-// fallback image
-$fallback = 'assets/img/noimage.png'; 
-
 // Ambil role user
 $user_role = $_SESSION['role'] ?? 'user'; // default 'user'
 
@@ -28,6 +28,29 @@ $user_role = $_SESSION['role'] ?? 'user'; // default 'user'
 if ($user_role === 'admin') {
     include 'sidebar.php';
 }
+
+// ===== TOP 3 PRODUK TERLARIS =====
+$top_products = $db->query("
+    SELECT 'ebook' AS type, e.ebook_id AS id, e.ebook_title AS title, e.ebook_price AS price, e.ebook_cover_image AS img
+    FROM ebooks e
+    JOIN order_items oi ON oi.ebook_id = e.ebook_id
+    GROUP BY e.ebook_id
+    ORDER BY SUM(oi.item_quantity) DESC
+    LIMIT 3
+");
+
+$top_services = $db->query("
+    SELECT 'service' AS type, s.service_id AS id, s.service_name AS title, s.service_price AS price, s.service_thumbnail AS img
+    FROM services s
+    JOIN order_items oi ON oi.service_id = s.service_id
+    GROUP BY s.service_id
+    ORDER BY SUM(oi.item_quantity) DESC
+    LIMIT 3
+");
+
+$top_all = [];
+while($r = $top_products->fetch_assoc()) $top_all[] = $r;
+while($r = $top_services->fetch_assoc()) $top_all[] = $r;
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -58,16 +81,11 @@ if ($user_role === 'admin') {
 
 <main class="container my-5">
 
-  <!-- Highlight + search -->
   <div class="row mb-4">
-    <div class="col-md-8">
-      <div class="card p-3">
-        <h5 class="mb-0">Highlight</h5>
-        <p class="text-muted small mb-0">Produk unggulan & penawaran khusus.</p>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card p-3">
+
+    <!-- SEARCH DI ATAS -->
+    <div class="col-12">
+      <div class="card p-3 mb-3">
         <h6 class="mb-1">Cari Cepat</h6>
         <form action="search.php" method="get">
             <div class="input-group">
@@ -77,7 +95,36 @@ if ($user_role === 'admin') {
         </form>
       </div>
     </div>
-  </div>
+
+    <!-- HIGHLIGHT -->
+    <div class="col-12">
+      <div class="card p-4">
+        <h5 class="mb-0">Highlight</h5>
+        <p class="text-muted small mb-0">Produk unggulan & penawaran khusus.</p>
+
+        <div class="d-flex gap-3 flex-wrap mt-2">
+        <?php if(count($top_all) > 0):
+            foreach($top_all as $p):
+                $img = $p['img'] && file_exists($p['img']) ? $p['img'] : $fallback;
+        ?>
+            <div style="width:120px;text-align:center;">
+                <a href="product.php?id=<?= $p['id'] ?>&type=<?= $p['type'] ?>">
+                    <img src="<?= $img ?>" alt="<?= htmlspecialchars($p['title']) ?>" style="width:100%;height:100px;object-fit:cover;border-radius:6px;">
+                </a>
+                <div class="small mt-1"><?= htmlspecialchars($p['title']) ?></div>
+                <div class="fw-bold">Rp <?= number_format($p['price'],0,',','.') ?></div>
+            </div>
+        <?php
+            endforeach;
+        else:
+            echo "<div class='text-muted'>Belum Ada</div>";
+        endif;
+        ?>
+        </div>
+      </div>
+    </div>
+
+</div>
 
   <!-- EBOOKS -->
 <section class="mb-5">
@@ -141,21 +188,9 @@ if ($user_role === 'admin') {
   </div>
 </section>
 
-
 </main>
 
-<footer class="footer py-3 bg-light">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 text-start">
-        <strong>Lorapz Store</strong><br>Marketplace E-Book & Jasa Digital
-      </div>
-      <div class="col-md-6 text-end text-muted">
-        &copy; <?= date('Y') ?> Lorapz Store
-      </div>
-    </div>
-  </div>
-</footer>
+<?php include 'footer.php'; ?>
 
 <script src="global.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

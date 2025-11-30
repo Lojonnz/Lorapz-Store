@@ -8,11 +8,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 <div class="sidebar bg-primary" id="sidebar">
     <a href="index.php" class="<?= $current_page == 'index.php' ? 'bg-white text-primary' : '' ?>">Halaman Utama</a>
-    <a href="dashboard.php" class="<?= $current_page == 'dashboard.php' ? 'bg-white text-primary' : '' ?>">Dashboard</a>
-    <a href="addproduct.php" class="<?= $current_page == 'addproduct.php' ? 'bg-white text-primary' : '' ?>">Tambah Produk</a>
-    <a href="orders.php" class="<?= $current_page == 'orders.php' ? 'bg-white text-primary' : '' ?>">Transaksi</a>
-    <a href="users.php" class="<?= $current_page == 'users.php' ? 'bg-white text-primary' : '' ?>">Pelanggan</a>
-    <a href="laporan.php" class="<?= $current_page == 'laporan.php' ? 'bg-white text-primary' : '' ?>">Laporan</a>
+    <a href="admin_dashboard.php" class="<?= $current_page == 'admin_dashboard.php' ? 'bg-white text-primary' : '' ?>">Dashboard</a>
+    <a href="admin_products.php" class="<?= $current_page == 'admin_products.php' ? 'bg-white text-primary' : '' ?>">Produk</a>
+    <a href="admin_addproduct.php" class="<?= $current_page == 'admin_addproduct.php' ? 'bg-white text-primary' : '' ?>">Tambah Produk</a>
+    <a href="admin_orders.php" class="<?= $current_page == 'admin_orders.php' ? 'bg-white text-primary' : '' ?>">Orders</a>
     <hr class="text-white">
     <a href="logout.php" class="text-white">Keluar</a>
 </div>
