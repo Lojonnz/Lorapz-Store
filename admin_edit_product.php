@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Upload preview
         if (!empty($_FILES['preview']['name'])) {
             $ext = pathinfo($_FILES['preview']['name'], PATHINFO_EXTENSION);
-            $filename = 'uploads/preview_'.$id.'_'.time().'.'.$ext;
+            $filename = 'uploads/ebooks/previews/preview_'.$id.'_'.time().'.'.$ext;
             move_uploaded_file($_FILES['preview']['tmp_name'], $filename);
 
             $db->query("UPDATE ebooks SET ebook_preview_file='$filename' WHERE ebook_id=$id");
@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Upload full file
         if (!empty($_FILES['full']['name'])) {
             $ext = pathinfo($_FILES['full']['name'], PATHINFO_EXTENSION);
-            $filename = 'uploads/full_'.$id.'_'.time().'.'.$ext;
+            $filename = 'uploads/ebooks/full/full_'.$id.'_'.time().'.'.$ext;
             move_uploaded_file($_FILES['full']['tmp_name'], $filename);
 
             $db->query("UPDATE ebooks SET ebook_full_file='$filename' WHERE ebook_id=$id");
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Upload thumbnail
         if (!empty($_FILES['cover']['name'])) {
             $ext = pathinfo($_FILES['cover']['name'], PATHINFO_EXTENSION);
-            $filename = 'uploads/service_'.$id.'_'.time().'.'.$ext;
+            $filename = 'uploads/services/service_'.$id.'_'.time().'.'.$ext;
 
             move_uploaded_file($_FILES['cover']['tmp_name'], $filename);
 
